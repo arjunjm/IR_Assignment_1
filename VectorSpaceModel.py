@@ -47,7 +47,7 @@ def computeDocumentFrequency(inputFile):
     tokenSet = set()
     for line in inputFile:
         line = line.lower()
-        tokens = re.findall('\w+', line)
+        tokens = re.sub('[^0-9a-zA-Z]+', ' ', line).split()
         for token in tokens:
             tokenFrequencyMap[token] = tokenFrequencyMap.get(token, 0) + 1
             tokenSet.add(token)
@@ -92,7 +92,7 @@ def processUserQuery():
             break
         
         userQueryTokenFrequencyMap = {}
-        userQueryTokenList = re.findall('\w+', userQuery)
+        userQueryTokenList = re.sub('[^0-9a-zA-Z]+', ' ', userQuery).split()
         for token in userQueryTokenList:
             if token in userQueryTokenFrequencyMap:
                 userQueryTokenFrequencyMap[token] += 1

@@ -12,7 +12,7 @@ def tokenize(file):
     tokenSet = set() 
     for line in file:
         line = line.lower()
-        tokens = re.findall('\w+', line)
+        tokens = re.sub('[^0-9a-zA-Z]+', ' ', line).split()
         for token in tokens:
             tokenSet.add(token)            
     return tokenSet
@@ -67,7 +67,7 @@ def processUserQuery():
             print "Exiting program...Have a nice day!"
             break
         
-        queryTokenList  = re.findall('\w+', userQuery)
+        queryTokenList  = re.sub('[^0-9a-zA-Z]+', ' ', userQuery).split()
         postingList = []
         setIntersection = set()
             
