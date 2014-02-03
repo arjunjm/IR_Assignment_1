@@ -16,7 +16,7 @@ documentFrequencyMap= {}
 fileCount = 0
    
 # The document vector map initially is built as just a map from 
-# the document to the token frequency. Since the file count is not 
+# the document to the token frequency map. Since the file count is not 
 # known at the beginning, the IDF of the terms cannot be calculated. 
 # Here the map is updated with TF-IDF values of the terms.
 
@@ -84,7 +84,6 @@ def processUserQuery():
         print " "
         documentRankHeap = []
         userQuery = raw_input("Input your query : ")
-        #start = time.clock()
         userQuery = userQuery.lower()
         
         if str(userQuery) == "exit":
