@@ -5,10 +5,21 @@ import math
 import heapq
 from operator import itemgetter
 
+# This is a dict of dicts. The key terms are the documents while the 
+# value terms are dicts of tokens to their TF-IDF values
 documentVectorMap = {}
+
+# This is a map from tokens to their document frequency
 documentFrequencyMap= {}
+
+# This variable keeps a track of the total number of files inside the directory
 fileCount = 0
    
+# The document vector map initially is built as just a map from 
+# the document to the token frequency. Since the file count is not 
+# known at the beginning, the IDF of the terms cannot be calculated. 
+# Here the map is updated with TF-IDF values of the terms.
+
 def updateDocumentVectorMap():
     global documentVectorMap
     global documentFrequencyMap
@@ -27,6 +38,8 @@ def updateDocumentVectorMap():
             
         documentVectorMap[document] = documentTokenFrequencyMap
              
+# This function builds the documentFrequencyMap when all the files are traversed
+
 def computeDocumentFrequency(inputFile):
     global documentVectorMap
     global documentFrequencyMap
@@ -51,7 +64,6 @@ def computeDocumentFrequencyForAllTerms():
         datasetDirectory = sys.argv[1]
     else:
         datasetDirectory = "nsf award abstracts"
-    #for root, dirs, files in os.walk(os.getcwd()+"//nsf award abstracts"):
     for root, dirs, files in os.walk(os.getcwd()+"//"+datasetDirectory):
         for singleFile in files:
             if str(singleFile).endswith("txt"):
@@ -60,13 +72,16 @@ def computeDocumentFrequencyForAllTerms():
                 computeDocumentFrequency(textFile)
                 textFile.close()
 
+# Function to process user query. The top 50 elements are maintained in a min-heap.
+# New documents get added to the heap if their scores for the user query are larger 
+# than the min element in the heap
+
 def processUserQuery():
-    #print "Please wait while the document vector index is being loaded...."
-    #documentVectorMap        = pickle.load(open("DocumentVectorMap.p", "rb"))
     global documentVectorMap
     userQuery = ""
     
     while True:
+        print " "
         documentRankHeap = []
         userQuery = raw_input("Input your query : ")
         #start = time.clock()
@@ -84,6 +99,9 @@ def processUserQuery():
             else:
                 userQueryTokenFrequencyMap[token] = 1
                 
+        for token in userQueryTokenFrequencyMap:
+            userQueryTokenFrequencyMap[token] = 1 + math.log10(userQueryTokenFrequencyMap[token])
+
         userQueryTokenFrequencyMap = buildQueryUnitVector(userQueryTokenFrequencyMap)
         
         for document in documentVectorMap:
@@ -125,14 +143,6 @@ def main():
     global fileCount
     print "Generating index...Please wait!!"
     computeDocumentFrequencyForAllTerms()
-
-    print "Number of tokens = "+str(len(documentFrequencyMap))
-
-    #f = open("tokenList.txt", "wb")
-    #for token in documentFrequencyMap.keys():
-    #    f.write(token+'\n')
-
-    #f.close()
     updateDocumentVectorMap()
     print "Index generation complete. You may enter your queries now!"
     processUserQuery()
