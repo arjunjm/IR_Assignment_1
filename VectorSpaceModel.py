@@ -29,7 +29,7 @@ def updateDocumentVectorMap():
         documentTokenFrequencyMap = documentVectorMap[document]
         for token in documentTokenFrequencyMap:
             tokenFrequency = 1 + math.log10(documentTokenFrequencyMap[token])
-            tokenIDFValue  = math.log10(fileCount/documentFrequencyMap[token])
+            tokenIDFValue  = math.log10(fileCount*1.0/documentFrequencyMap[token])
             documentTokenFrequencyMap[token] = tokenFrequency * tokenIDFValue
             sumOfSquares += math.pow(documentTokenFrequencyMap[token], 2)
         
@@ -78,6 +78,7 @@ def computeDocumentFrequencyForAllTerms():
 
 def processUserQuery():
     global documentVectorMap
+    global documentFrequencyMap
     userQuery = ""
     
     while True:
@@ -103,6 +104,16 @@ def processUserQuery():
 
         userQueryTokenFrequencyMap = buildQueryUnitVector(userQueryTokenFrequencyMap)
         
+        queryTokenNotPresent = False
+        for token in userQueryTokenFrequencyMap:
+            if token not in documentFrequencyMap:
+                queryTokenNotPresent = True
+                break
+
+        if queryTokenNotPresent == True:
+            print "Sorry, no matches found :("
+            continue
+
         for document in documentVectorMap:
             documentScore = 0
             documentVector = documentVectorMap[document]
@@ -114,7 +125,7 @@ def processUserQuery():
                     heapq.heappush(documentRankHeap, (documentScore, document))
                 elif documentScore > documentRankHeap[0][0]:
                     heapq.heappushpop(documentRankHeap, (documentScore, document))
-        
+
         topRankedDocumentList = heapq.nlargest(50, documentRankHeap, key = itemgetter(0))
 
         if len(topRankedDocumentList) == 0:
